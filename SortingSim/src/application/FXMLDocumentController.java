@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -30,14 +31,14 @@ public class FXMLDocumentController implements Initializable {
     Timeline mergeSortTimeline;
     Timeline quickSortTimeline;
     
-    static int[] array = new int[20];
+    static int[] array = null;
     int hodnota;
     int i;
     int sortingType = 0;
     int curr_size = 1;  
     int left_start = 0;
     int top = -1;
-    int h = array.length -1;
+    int h = 0;
     int l = 0;
     
     @FXML  
@@ -49,48 +50,29 @@ public class FXMLDocumentController implements Initializable {
     @FXML
     private void handleButtonAction(ActionEvent ev) 
     { 
-
+    	array = new int[100]; 
+    	h = array.length -1;
     	Random rand = new Random();
-    	for (int i = 0; i < 20; i++) {                
-    		array[i] = rand.nextInt(1000); 
-        }
-    	
     	final CategoryAxis osaX = new CategoryAxis();          
         final NumberAxis osaY = new NumberAxis();
         ObservableList<XYChart.Series<String, Number>> barChartData = FXCollections.observableArrayList();
         final BarChart.Series<String, Number> series1 = new BarChart.Series<>();
-        series1.getData().add(new XYChart.Data<>("1", array[0]));        
-        series1.getData().add(new XYChart.Data<>("2", array[1]));
-        series1.getData().add(new XYChart.Data<>("3", array[2]));
-        series1.getData().add(new XYChart.Data<>("4", array[3]));
-        series1.getData().add(new XYChart.Data<>("5", array[4]));
-        series1.getData().add(new XYChart.Data<>("6", array[5]));
-        series1.getData().add(new XYChart.Data<>("7", array[6]));
-        series1.getData().add(new XYChart.Data<>("8", array[7]));
-        series1.getData().add(new XYChart.Data<>("9", array[8]));
-        series1.getData().add(new XYChart.Data<>("10", array[9]));
-        series1.getData().add(new XYChart.Data<>("11", array[10]));        
-        series1.getData().add(new XYChart.Data<>("12", array[11]));
-        series1.getData().add(new XYChart.Data<>("13", array[12]));
-        series1.getData().add(new XYChart.Data<>("14", array[13]));
-        series1.getData().add(new XYChart.Data<>("15", array[14]));
-        series1.getData().add(new XYChart.Data<>("16", array[15]));
-        series1.getData().add(new XYChart.Data<>("17", array[16]));
-        series1.getData().add(new XYChart.Data<>("18", array[17]));
-        series1.getData().add(new XYChart.Data<>("19", array[18]));
-        series1.getData().add(new XYChart.Data<>("20", array[19]));
-        barChartData.add(series1);
-        
+            
+        for (int i = 0; i < 100; i++) {                
+    		array[i] = rand.nextInt(1000); 
+    		series1.getData().add(new XYChart.Data<>(Integer.toString(i), array[i]));
+        }
+        barChartData.add(series1);       
         barChart.setData(barChartData);
 
-        Node node = barChart.lookup(".data0.chart-bar");
-        node.setStyle("-fx-bar-fill: red");       
+//        Node node = barChart.lookup(".data0.chart-bar");
+//        node.setStyle("-fx-bar-fill: red");       
         i = 0;
         int r = array.length-1;
         int n = array.length;
         
         
-        comparisonSortTimeline = new Timeline(new KeyFrame(Duration.seconds(1), (event) -> 
+        comparisonSortTimeline = new Timeline(new KeyFrame(Duration.seconds(.25), (event) -> 
         {
             System.out.println(i + ": " + Arrays.toString(array));         
             String selectedSort = sortingDropDown.getValue();
@@ -118,7 +100,7 @@ public class FXMLDocumentController implements Initializable {
         
        
         
-        mergeSortTimeline = new Timeline(new KeyFrame(Duration.seconds(1), (event) -> 
+        mergeSortTimeline = new Timeline(new KeyFrame(Duration.seconds(.25), (event) -> 
         {             	            	              	              	                  
         	System.out.println(i + ": " + Arrays.toString(array));         
 
@@ -138,72 +120,89 @@ public class FXMLDocumentController implements Initializable {
         	{
         		curr_size = 2*curr_size;
         		left_start = 0;
+        	}                    
+        	i++;
+        	
+        	if (this.isSorted(array))
+        	{
+        		mergeSortTimeline.stop();
         	}
-	                      
-        	i++;
         }));
         
         
-             
-    	int[] stack = new int[h - l + 1];     
-        stack[++top] = l;
-        stack[++top] = h;          
-        quickSortTimeline = new Timeline(new KeyFrame(Duration.seconds(1), (event) -> 
+        int[] stack = new int[h - l + 1]; 
+        top = -1; 
+        stack[++top] = l; 
+        stack[++top] = h;         
+        quickSortTimeline = new Timeline(new KeyFrame(Duration.seconds(.25), (event) -> 
         {             	            	              	              	                  
-        	System.out.println(i + ": " + Arrays.toString(array));          
-	        h = stack[top--]; 
-	        l = stack[top--]; 
-	        
-	        int p = SortingFunctions.partition(array, l, h); 
-	        if (p - 1 > l) 
-	        { 
-	           stack[++top] = l; 
-	           stack[++top] = p - 1; 
-	        } 
-	            
-	        if (p + 1 < h) 
-	        { 
-	           stack[++top] = p + 1; 
-	           stack[++top] = h; 
-	        } 
-	        
-	       	        
-	        List<XYChart.Data<String, Number>> tempData = new ArrayList<Data<String, Number>>();
-	        for(int i = 0; i < array.length; i++)
-	        {
-	              tempData.add(new Data<String, Number>(Integer.toString(i), array[i]));
-	        }            
-	        barChartData.get(0).getData().setAll(tempData);                    	           
-	                      
-        	i++;
+        	System.out.println(i + ": " + Arrays.toString(array));  
+        	if (top >= 0)
+        	{
+		        h = stack[top--]; 
+		        l = stack[top--]; 
+		        
+		        int p = SortingFunctions.partition(array, l, h); 
+		        if (p - 1 > l) 
+		        { 
+		           stack[++top] = l; 
+		           stack[++top] = p - 1; 
+		        } 
+		            
+		        if (p + 1 < h) 
+		        { 
+		           stack[++top] = p + 1; 
+		           stack[++top] = h; 
+		        } 
+		               	        
+		        List<XYChart.Data<String, Number>> tempData = new ArrayList<Data<String, Number>>();
+		        for(int i = 0; i < array.length; i++)
+		        {
+		              tempData.add(new Data<String, Number>(Integer.toString(i), array[i]));
+		        }            
+		        barChartData.get(0).getData().setAll(tempData);                    	                        
+	        	i++;
+        	}
+        	
+        	if (this.isSorted(array))
+        	{
+        		quickSortTimeline.stop();
+        	}
         }));
         
-        quickSortTimeline.setCycleCount(30);
-        mergeSortTimeline.setCycleCount(30);
+        quickSortTimeline.setCycleCount(Timeline.INDEFINITE);
+        mergeSortTimeline.setCycleCount(Timeline.INDEFINITE);
         comparisonSortTimeline.setCycleCount(array.length);
     }    
 
     @FXML 
     private void bubbleButton(ActionEvent ev) 
-    { 
-    	
-    	String selectedSort = sortingDropDown.getValue();
-        switch(selectedSort)
-        {
-           case "Bubble" :
-           case "Selection" :
-           case "Insertion" :
-        	   comparisonSortTimeline.play();
-              break; 
-           case "Merge" :
-        	   mergeSortTimeline.play();
-           case "Quick" :
-        	   quickSortTimeline.play();
-           default : 
-        	   array = SortingFunctions.SelectionSort(array, i);                 
-        }
-    	
-    }       
+    {  	
+    	try 
+    	{
+    		String selectedSort = sortingDropDown.getValue();
+    		switch(selectedSort)
+            {
+               case "Bubble" :
+               case "Selection" :
+               case "Insertion" :
+            	   comparisonSortTimeline.play();
+                  break; 
+               case "Merge" :
+            	   mergeSortTimeline.play();
+               case "Quick" :
+            	   quickSortTimeline.play();
+               default : 
+            	   array = SortingFunctions.SelectionSort(array, i);                 
+            }
+    	} 
+    	catch (Exception e) {} 	       	
+    }    
+    
+    public boolean isSorted(int[] array)
+    {
+    	return IntStream.range(0, array.length - 1).noneMatch(i -> array[i] > array[i + 1]);
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {

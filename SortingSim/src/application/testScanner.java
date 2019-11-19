@@ -24,8 +24,8 @@ public class testScanner {
 			arr[i] = scanner.nextInt();
 		}
 
-		System.out.println(Arrays.toString(arr));
-		System.out.print(arr.length);
+//		System.out.println(Arrays.toString(arr));
+//		System.out.print(arr.length);
 
 
 

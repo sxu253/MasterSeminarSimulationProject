@@ -12,9 +12,10 @@ public class testScanner {
 
 	public static void main(String[] args) throws IOException {
 
-		File file1 = new File("movieratings.txt");
+		File file1 = new File("/Users/sonia/MasterSeminarSimulationProject/SortingSim/src/application/movieratings.txt");
 
 		Scanner scanner = new Scanner(file1);
+//		Scanner sc = new Scanner(new File(fileName));
 
 		int [] arr = new int[100]; 
 		int h = arr.length -1;
@@ -23,7 +24,8 @@ public class testScanner {
 			arr[i] = scanner.nextInt();
 		}
 
-		System.out.print(Arrays.toString(arr));
+		System.out.println(Arrays.toString(arr));
+		System.out.print(arr.length);
 
 
 
